@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/drewillard/static/css/main.f855e6bc.css",
+    "main.js": "/drewillard/static/js/main.92eec933.js",
+    "static/js/952.83cf9761.chunk.js": "/drewillard/static/js/952.83cf9761.chunk.js",
+    "static/js/453.ad56a758.chunk.js": "/drewillard/static/js/453.ad56a758.chunk.js",
+    "index.html": "/drewillard/index.html",
+    "main.f855e6bc.css.map": "/drewillard/static/css/main.f855e6bc.css.map",
+    "main.92eec933.js.map": "/drewillard/static/js/main.92eec933.js.map",
+    "952.83cf9761.chunk.js.map": "/drewillard/static/js/952.83cf9761.chunk.js.map",
+    "453.ad56a758.chunk.js.map": "/drewillard/static/js/453.ad56a758.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f855e6bc.css",
+    "static/js/main.92eec933.js"
+  ]
+}
