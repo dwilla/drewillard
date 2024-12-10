@@ -45,11 +45,6 @@ export default function StreamPage() {
       </h1>
       
       <div className="relative mb-6">
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
-            <div className="text-white">Loading stream...</div>
-          </div>
-        )}
         <IVSPlayer 
           playbackUrl={isLive ? liveStreamUrl : recordingUrl}
           isLive={isLive}

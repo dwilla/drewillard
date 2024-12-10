@@ -9,6 +9,17 @@ interface IVSPlayerProps {
   onError?: (error: any) => void;
 }
 
+function LoadingOverlay() {
+  return (
+    <div 
+      className="absolute inset-0 flex items-center justify-center pointer-events-none"
+      style={{ background: 'rgba(0, 0, 0, 0.3)' }}
+    >
+      <div className="text-white">Loading stream...</div>
+    </div>
+  );
+}
+
 export default function IVSPlayerClient({ 
   playbackUrl, 
   isLive = true,
@@ -17,150 +28,81 @@ export default function IVSPlayerClient({
 }: IVSPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [shouldShowLoading, setShouldShowLoading] = useState(true);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    let isMounted = true;
+    mountedRef.current = true;
+    
+    const hideLoadingOverlay = () => {
+      if (mountedRef.current) {
+        console.log('Hiding loading overlay');
+        setShouldShowLoading(false);
+      }
+    };
 
     const initPlayer = async () => {
       try {
-        if (!videoRef.current) {
-          console.error('Video element not found');
-          throw new Error('Video element not found');
-        }
-        if (!playbackUrl) {
-          console.error('No playback URL provided');
-          throw new Error('No playback URL provided');
-        }
+        if (!videoRef.current || !playbackUrl) return;
 
-        console.log('Starting player initialization with:', {
-          playbackUrl,
-          isLive,
-          videoElement: !!videoRef.current
+        const IVS = await import('amazon-ivs-player');
+        if (!mountedRef.current) return;
+
+        const { create, PlayerState } = IVS;
+
+        playerRef.current = create({
+          wasmWorker: '/amazon-ivs-wasmworker.min.js',
+          wasmBinary: '/amazon-ivs-wasmworker.min.wasm'
         });
 
-        // Import IVS Player
-        const IVS = await import('amazon-ivs-player');
-        if (!isMounted) return;
+        await playerRef.current.attachHTMLVideoElement(videoRef.current);
 
-        console.log('IVS module loaded successfully');
-        const { create, PlayerState, PlayerEventType } = IVS;
+        // Handle video element events
+        videoRef.current.addEventListener('canplay', hideLoadingOverlay);
+        videoRef.current.addEventListener('playing', hideLoadingOverlay);
 
-        if (!playerRef.current) {
-          const wasmBinaryPath = '/amazon-ivs-wasmworker.min.wasm';
-          const wasmWorkerPath = '/amazon-ivs-wasmworker.min.js';
-
-          console.log('Creating new player instance with config:', {
-            wasmWorker: wasmWorkerPath,
-            wasmBinary: wasmBinaryPath
-          });
+        // Handle IVS player state changes
+        playerRef.current.addEventListener('stateChange', (state: string) => {
+          if (!mountedRef.current) return;
+          console.log('Player state changed:', state);
           
-          playerRef.current = create({
-            wasmWorker: wasmWorkerPath,
-            wasmBinary: wasmBinaryPath
-          });
-
-          console.log('Player instance created successfully');
-          
-          try {
-            await playerRef.current.attachHTMLVideoElement(videoRef.current);
-            console.log('Video element attached successfully');
-          } catch (error) {
-            console.error('Error attaching video element:', error);
-            throw error;
+          if (state === PlayerState.PLAYING) {
+            console.log('Player is now playing');
+            hideLoadingOverlay();
+            onReady?.();
           }
+        });
 
-          // Add event listeners
-          playerRef.current.addEventListener(PlayerState.READY, () => {
-            console.log('Player READY event fired');
-            if (isMounted) {
-              setIsLoading(false);
-            }
-          });
+        playerRef.current.addEventListener('error', (err: any) => {
+          if (!mountedRef.current) return;
+          hideLoadingOverlay();
+          onError?.(err);
+        });
 
-          playerRef.current.addEventListener('stateChange', (state: any) => {
-            console.log('Player State Changed:', state);
-            if (state === PlayerState.PLAYING) {
-              console.log('Stream is playing');
-              if (isMounted) {
-                setIsLoading(false);
-                onReady?.();
-              }
-            } else if (state === PlayerState.ENDED) {
-              console.log('Stream ended');
-              if (isMounted) {
-                setIsLoading(true);
-              }
-            } else if (state === PlayerState.READY) {
-              console.log('Player is ready');
-              if (isMounted) {
-                setIsLoading(false);
-              }
-            }
-          });
-
-          playerRef.current.addEventListener('error', (err: any) => {
-            console.error('Player Error:', {
-              message: err.message,
-              type: err.type,
-              code: err.code,
-              source: err.source,
-              stack: err.stack
-            });
-            if (isMounted) {
-              setIsLoading(false);
-              onError?.(err);
-            }
-          });
-
-          // Add quality change listener
-          playerRef.current.addEventListener('qualityChanged', (quality: any) => {
-            console.log('Quality changed:', quality);
-          });
-
-          // Add network health listeners
-          playerRef.current.addEventListener('rebuffering', () => {
-            console.log('Network: Stream is rebuffering');
-            if (isMounted) {
-              setIsLoading(true);
-            }
-          });
-
-          playerRef.current.addEventListener('buffering', () => {
-            console.log('Network: Stream is buffering');
-            if (isMounted) {
-              setIsLoading(true);
-            }
-          });
-        }
-
-        console.log('Loading stream URL:', playbackUrl);
+        // Load and play the stream
         await playerRef.current.load(playbackUrl);
-        console.log('Stream URL loaded, attempting to play');
-        
-        try {
-          await playerRef.current.play();
-          console.log('Play command issued successfully');
-        } catch (error) {
-          console.error('Error playing stream:', error);
-          throw error;
-        }
+        console.log('Stream loaded, attempting to play');
+        await playerRef.current.play();
+
       } catch (error) {
-        console.error('Error in player initialization:', error);
-        if (isMounted) {
-          setIsLoading(false);
+        if (mountedRef.current) {
+          setShouldShowLoading(false);
           onError?.(error);
         }
       }
     };
 
-    setIsLoading(true);
-    console.log('Starting player initialization');
     initPlayer();
 
+    // Cleanup function
     return () => {
-      console.log('Cleaning up player');
-      isMounted = false;
+      mountedRef.current = false;
+      
+      if (videoRef.current) {
+        videoRef.current.removeEventListener('canplay', hideLoadingOverlay);
+        videoRef.current.removeEventListener('playing', hideLoadingOverlay);
+      }
+      
       if (playerRef.current) {
         try {
           playerRef.current.pause();
@@ -175,20 +117,15 @@ export default function IVSPlayerClient({
 
   return (
     <div className="relative w-full aspect-video bg-black">
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
-          <div className="text-white">Loading stream...</div>
-        </div>
-      )}
       <video 
         ref={videoRef}
         className="w-full h-full"
         playsInline
         controls
         autoPlay
-        muted={isLive} // Mute only live streams for autoplay
-        style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
+        muted={isLive}
       />
+      {shouldShowLoading && <LoadingOverlay />}
     </div>
   );
 } 
