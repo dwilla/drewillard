@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface IVSPlayerProps {
   playbackUrl: string;
@@ -17,6 +17,7 @@ export default function IVSPlayerClient({
 }: IVSPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -24,45 +25,77 @@ export default function IVSPlayerClient({
     const initPlayer = async () => {
       try {
         if (!videoRef.current) {
+          console.error('Video element not found');
           throw new Error('Video element not found');
         }
         if (!playbackUrl) {
+          console.error('No playback URL provided');
           throw new Error('No playback URL provided');
         }
 
-        console.log('Initializing IVS player with URL:', playbackUrl);
-        
-        // Load the WASM worker script
-        const wasmWorkerScript = document.createElement('script');
-        wasmWorkerScript.src = '/amazon-ivs-wasmworker.min.js';
-        document.body.appendChild(wasmWorkerScript);
-
-        await new Promise((resolve) => {
-          wasmWorkerScript.onload = resolve;
+        console.log('Starting player initialization with:', {
+          playbackUrl,
+          isLive,
+          videoElement: !!videoRef.current
         });
 
+        // Import IVS Player
         const IVS = await import('amazon-ivs-player');
-        
         if (!isMounted) return;
 
-        console.log('IVS module loaded:', IVS);
+        console.log('IVS module loaded successfully');
         const { create, PlayerState, PlayerEventType } = IVS;
 
         if (!playerRef.current) {
-          console.log('Creating new player instance');
+          const wasmBinaryPath = '/amazon-ivs-wasmworker.min.wasm';
+          const wasmWorkerPath = '/amazon-ivs-wasmworker.min.js';
+
+          console.log('Creating new player instance with config:', {
+            wasmWorker: wasmWorkerPath,
+            wasmBinary: wasmBinaryPath
+          });
+          
           playerRef.current = create({
-            wasmWorker: '/amazon-ivs-wasmworker.min.wasm',
-            wasmBinary: '/amazon-ivs-wasmworker.min.wasm',
+            wasmWorker: wasmWorkerPath,
+            wasmBinary: wasmBinaryPath
           });
 
-          console.log('Player instance created:', playerRef.current);
-          playerRef.current.attachHTMLVideoElement(videoRef.current);
+          console.log('Player instance created successfully');
+          
+          try {
+            await playerRef.current.attachHTMLVideoElement(videoRef.current);
+            console.log('Video element attached successfully');
+          } catch (error) {
+            console.error('Error attaching video element:', error);
+            throw error;
+          }
+
+          // Add event listeners
+          playerRef.current.addEventListener(PlayerState.READY, () => {
+            console.log('Player READY event fired');
+            if (isMounted) {
+              setIsLoading(false);
+            }
+          });
 
           playerRef.current.addEventListener('stateChange', (state: any) => {
-            console.log('Player State:', state);
+            console.log('Player State Changed:', state);
             if (state === PlayerState.PLAYING) {
               console.log('Stream is playing');
-              onReady?.();
+              if (isMounted) {
+                setIsLoading(false);
+                onReady?.();
+              }
+            } else if (state === PlayerState.ENDED) {
+              console.log('Stream ended');
+              if (isMounted) {
+                setIsLoading(true);
+              }
+            } else if (state === PlayerState.READY) {
+              console.log('Player is ready');
+              if (isMounted) {
+                setIsLoading(false);
+              }
             }
           });
 
@@ -72,38 +105,56 @@ export default function IVSPlayerClient({
               type: err.type,
               code: err.code,
               source: err.source,
+              stack: err.stack
             });
-            onError?.(err);
+            if (isMounted) {
+              setIsLoading(false);
+              onError?.(err);
+            }
           });
 
+          // Add quality change listener
           playerRef.current.addEventListener('qualityChanged', (quality: any) => {
-            console.log('Quality Changed:', quality);
+            console.log('Quality changed:', quality);
           });
 
-          // Add more detailed event listeners
+          // Add network health listeners
           playerRef.current.addEventListener('rebuffering', () => {
-            console.log('Stream is rebuffering');
+            console.log('Network: Stream is rebuffering');
+            if (isMounted) {
+              setIsLoading(true);
+            }
           });
 
           playerRef.current.addEventListener('buffering', () => {
-            console.log('Stream is buffering');
-          });
-
-          playerRef.current.addEventListener('ended', () => {
-            console.log('Stream has ended');
+            console.log('Network: Stream is buffering');
+            if (isMounted) {
+              setIsLoading(true);
+            }
           });
         }
 
-        console.log('Loading stream URL');
+        console.log('Loading stream URL:', playbackUrl);
         await playerRef.current.load(playbackUrl);
-        console.log('Playing stream');
-        await playerRef.current.play();
+        console.log('Stream URL loaded, attempting to play');
+        
+        try {
+          await playerRef.current.play();
+          console.log('Play command issued successfully');
+        } catch (error) {
+          console.error('Error playing stream:', error);
+          throw error;
+        }
       } catch (error) {
-        console.error('Error initializing IVS player:', error);
-        onError?.(error);
+        console.error('Error in player initialization:', error);
+        if (isMounted) {
+          setIsLoading(false);
+          onError?.(error);
+        }
       }
     };
 
+    setIsLoading(true);
     console.log('Starting player initialization');
     initPlayer();
 
@@ -119,22 +170,24 @@ export default function IVSPlayerClient({
           console.error('Error cleaning up player:', error);
         }
       }
-      // Remove the WASM worker script
-      const wasmScript = document.querySelector('script[src="/amazon-ivs-wasmworker.min.js"]');
-      if (wasmScript) {
-        wasmScript.remove();
-      }
     };
   }, [playbackUrl, isLive, onReady, onError]);
 
   return (
     <div className="relative w-full aspect-video bg-black">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
+          <div className="text-white">Loading stream...</div>
+        </div>
+      )}
       <video 
         ref={videoRef}
         className="w-full h-full"
         playsInline
         controls
-        muted // Initially muted to allow autoplay
+        autoPlay
+        muted={isLive} // Mute only live streams for autoplay
+        style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
       />
     </div>
   );

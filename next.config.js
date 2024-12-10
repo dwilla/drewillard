@@ -4,11 +4,19 @@ const nextConfig = {
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true,
+      layers: true,
     };
     
+    // Remove existing WASM rule if any
+    config.module.rules = config.module.rules.filter(
+      (rule) => rule.test?.toString() !== '/\\.wasm$/'
+    );
+
+    // Add new WASM handling rule
     config.module.rules.push({
       test: /\.wasm$/,
-      type: 'asset/resource',
+      use: ['file-loader'],
+      type: 'javascript/auto',
     });
 
     return config;
@@ -25,6 +33,19 @@ const nextConfig = {
           {
             key: 'Cross-Origin-Embedder-Policy',
             value: 'require-corp',
+          },
+        ],
+      },
+      {
+        source: '/:path*.wasm',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/wasm',
+          },
+          {
+            key: 'Cross-Origin-Resource-Policy',
+            value: 'cross-origin',
           },
         ],
       },
