@@ -10,6 +10,12 @@ export default function Header() {
           </Link>
           <div className="space-x-6">
             <Link 
+              href="/stream" 
+              className="hover:opacity-80"
+            >
+              Live Stream
+            </Link>
+            <Link 
               href="/concerts" 
               className="hover:opacity-80"
             >
