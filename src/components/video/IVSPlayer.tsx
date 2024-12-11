@@ -1,131 +1,63 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { create } from 'amazon-ivs-player';
 
 interface IVSPlayerProps {
   playbackUrl: string;
-  isLive?: boolean;
+  isLive: boolean;
   onReady?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: Error) => void;
 }
 
-function LoadingOverlay() {
-  return (
-    <div 
-      className="absolute inset-0 flex items-center justify-center pointer-events-none"
-      style={{ background: 'rgba(0, 0, 0, 0.3)' }}
-    >
-      <div className="text-white">Loading stream...</div>
-    </div>
-  );
-}
-
-export default function IVSPlayerClient({ 
-  playbackUrl, 
-  isLive = true,
-  onReady,
-  onError 
-}: IVSPlayerProps) {
+export default function IVSPlayer({ playbackUrl, isLive, onReady, onError }: IVSPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<any>(null);
-  const [shouldShowLoading, setShouldShowLoading] = useState(true);
-  const mountedRef = useRef(true);
 
   useEffect(() => {
-    mountedRef.current = true;
-    
-    const hideLoadingOverlay = () => {
-      if (mountedRef.current) {
-        console.log('Hiding loading overlay');
-        setShouldShowLoading(false);
-      }
-    };
+    if (!videoRef.current) return;
 
-    const initPlayer = async () => {
-      try {
-        if (!videoRef.current || !playbackUrl) return;
+    try {
+      // Create player
+      const player = create({
+        wasmWorker: '/amazon-ivs-wasmworker.min.js',
+        wasmBinary: '/amazon-ivs-wasmworker.min.wasm',
+      });
 
-        const IVS = await import('amazon-ivs-player');
-        if (!mountedRef.current) return;
+      playerRef.current = player;
+      player.attachHTMLVideoElement(videoRef.current);
 
-        const { create, PlayerState } = IVS;
+      // Add event listeners
+      player.addEventListener('ready', () => {
+        onReady?.();
+      });
 
-        playerRef.current = create({
-          wasmWorker: '/amazon-ivs-wasmworker.min.js',
-          wasmBinary: '/amazon-ivs-wasmworker.min.wasm'
-        });
+      player.addEventListener('error', (error: Error) => {
+        console.error('IVS Player error:', error);
+        onError?.(error);
+      });
 
-        await playerRef.current.attachHTMLVideoElement(videoRef.current);
+      // Load and play stream
+      player.load(playbackUrl);
+      player.play();
 
-        // Handle video element events
-        videoRef.current.addEventListener('canplay', hideLoadingOverlay);
-        videoRef.current.addEventListener('playing', hideLoadingOverlay);
-
-        // Handle IVS player state changes
-        playerRef.current.addEventListener('stateChange', (state: string) => {
-          if (!mountedRef.current) return;
-          console.log('Player state changed:', state);
-          
-          if (state === PlayerState.PLAYING) {
-            console.log('Player is now playing');
-            hideLoadingOverlay();
-            onReady?.();
-          }
-        });
-
-        playerRef.current.addEventListener('error', (err: any) => {
-          if (!mountedRef.current) return;
-          hideLoadingOverlay();
-          onError?.(err);
-        });
-
-        // Load and play the stream
-        await playerRef.current.load(playbackUrl);
-        console.log('Stream loaded, attempting to play');
-        await playerRef.current.play();
-
-      } catch (error) {
-        if (mountedRef.current) {
-          setShouldShowLoading(false);
-          onError?.(error);
-        }
-      }
-    };
-
-    initPlayer();
-
-    // Cleanup function
-    return () => {
-      mountedRef.current = false;
-      
-      if (videoRef.current) {
-        videoRef.current.removeEventListener('canplay', hideLoadingOverlay);
-        videoRef.current.removeEventListener('playing', hideLoadingOverlay);
-      }
-      
-      if (playerRef.current) {
-        try {
-          playerRef.current.pause();
-          playerRef.current.delete();
-          playerRef.current = null;
-        } catch (error) {
-          console.error('Error cleaning up player:', error);
-        }
-      }
-    };
-  }, [playbackUrl, isLive, onReady, onError]);
+      return () => {
+        player.delete();
+      };
+    } catch (error) {
+      console.error('Error initializing IVS player:', error);
+      onError?.(error as Error);
+    }
+  }, [playbackUrl, onReady, onError]);
 
   return (
     <div className="relative w-full aspect-video bg-black">
-      <video 
+      <video
         ref={videoRef}
         className="w-full h-full"
         playsInline
-        controls
-        autoPlay
-        muted={isLive}
+        controls={!isLive}
       />
-      {shouldShowLoading && <LoadingOverlay />}
     </div>
   );
 } 

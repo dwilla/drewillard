@@ -20,9 +20,10 @@ export default function StreamPage() {
   const recordingUrl = ''; // This will be the URL of your recorded stream from S3
 
   useEffect(() => {
-    // Debug environment variables
-    console.log('Stream URL:', liveStreamUrl);
-    console.log('Environment variables:', process.env);
+    if (typeof window !== 'undefined') {
+      // Only log in client-side
+      console.log('Stream URL:', liveStreamUrl);
+    }
   }, [liveStreamUrl]);
 
   // Don't render player if no URL is available

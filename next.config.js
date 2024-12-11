@@ -1,55 +1,37 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
+    // Add WASM support
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true,
-      layers: true,
-    };
-    
-    // Remove existing WASM rule if any
-    config.module.rules = config.module.rules.filter(
-      (rule) => rule.test?.toString() !== '/\\.wasm$/'
-    );
+    }
 
-    // Add new WASM handling rule
+    // Add rule for worker files
     config.module.rules.push({
-      test: /\.wasm$/,
-      use: ['file-loader'],
-      type: 'javascript/auto',
-    });
+      test: /amazon-ivs-wasmworker\.min\.js/,
+      type: 'asset/resource',
+    })
 
-    return config;
+    return config
   },
-  headers: async () => {
+  // Add headers for WASM and SharedArrayBuffer support
+  async headers() {
     return [
       {
         source: '/:path*',
         headers: [
           {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin',
-          },
-          {
             key: 'Cross-Origin-Embedder-Policy',
             value: 'require-corp',
           },
-        ],
-      },
-      {
-        source: '/:path*.wasm',
-        headers: [
           {
-            key: 'Content-Type',
-            value: 'application/wasm',
-          },
-          {
-            key: 'Cross-Origin-Resource-Policy',
-            value: 'cross-origin',
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
           },
         ],
       },
-    ];
+    ]
   },
 }
 
