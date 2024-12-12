@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { create, PlayerEventType, PlayerState, PlayerError } from 'amazon-ivs-player';
+import { create, PlayerEventType, PlayerState, PlayerError, MediaPlayer } from 'amazon-ivs-player';
 
 interface IVSPlayerProps {
   playbackUrl: string;
@@ -12,7 +12,7 @@ interface IVSPlayerProps {
 
 export default function IVSPlayer({ playbackUrl, isLive, onReady, onError }: IVSPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<MediaPlayer | null>(null);
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -42,7 +42,10 @@ export default function IVSPlayer({ playbackUrl, isLive, onReady, onError }: IVS
       player.play();
 
       return () => {
-        player.delete();
+        if (playerRef.current) {
+          playerRef.current.delete();
+          playerRef.current = null;
+        }
       };
     } catch (error) {
       console.error('Error initializing IVS player:', error);
