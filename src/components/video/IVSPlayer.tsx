@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { create, PlayerEventType, PlayerState } from 'amazon-ivs-player';
+import { create, PlayerEventType, PlayerState, PlayerError } from 'amazon-ivs-player';
 
 interface IVSPlayerProps {
   playbackUrl: string;
   isLive: boolean;
   onReady?: () => void;
-  onError?: (error: Error) => void;
+  onError?: (error: PlayerError) => void;
 }
 
 export default function IVSPlayer({ playbackUrl, isLive, onReady, onError }: IVSPlayerProps) {
@@ -32,7 +32,7 @@ export default function IVSPlayer({ playbackUrl, isLive, onReady, onError }: IVS
         onReady?.();
       });
 
-      player.addEventListener(PlayerEventType.ERROR, (error: Error) => {
+      player.addEventListener(PlayerEventType.ERROR, (error: PlayerError) => {
         console.error('IVS Player error:', error);
         onError?.(error);
       });
@@ -46,7 +46,7 @@ export default function IVSPlayer({ playbackUrl, isLive, onReady, onError }: IVS
       };
     } catch (error) {
       console.error('Error initializing IVS player:', error);
-      onError?.(error as Error);
+      onError?.(error as PlayerError);
     }
   }, [playbackUrl, onReady, onError]);
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import type { PlayerError } from 'amazon-ivs-player';
 
 // Import IVSPlayer with no SSR
 const IVSPlayer = dynamic(() => import('@/components/video/IVSPlayer'), {
@@ -53,7 +54,7 @@ export default function StreamPage() {
             console.log('Player ready');
             setIsLoading(false);
           }}
-          onError={(error) => {
+          onError={(error: PlayerError) => {
             console.error('Player error:', error);
             setIsLoading(false);
           }}
