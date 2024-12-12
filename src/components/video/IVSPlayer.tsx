@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { create } from 'amazon-ivs-player';
+import { create, PlayerEventType, PlayerState } from 'amazon-ivs-player';
 
 interface IVSPlayerProps {
   playbackUrl: string;
@@ -28,11 +28,11 @@ export default function IVSPlayer({ playbackUrl, isLive, onReady, onError }: IVS
       player.attachHTMLVideoElement(videoRef.current);
 
       // Add event listeners
-      player.addEventListener('ready', () => {
+      player.addEventListener(PlayerState.READY, () => {
         onReady?.();
       });
 
-      player.addEventListener('error', (error: Error) => {
+      player.addEventListener(PlayerEventType.ERROR, (error: Error) => {
         console.error('IVS Player error:', error);
         onError?.(error);
       });
