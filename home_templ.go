@@ -29,7 +29,46 @@ func home() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><title>DREW'S WEBSITE DOT COM</title><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css\"><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></head><body data-theme=\"dark\"><header></header><main class=\"section\"><h1>Hey this is the templ template whats up dog</h1></main><footer id=\"footer\"></footer></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><title>DREW'S WEBSITE</title><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css\"><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><style>\n\t\t\t\t@keyframes fadeIn {\n\t\t\t\t\tfrom { opacity: 0; transform: translateY(20px); }\n\t\t\t\t\tto { opacity: 1; transform: translateY(0); }\n\t\t\t\t}\n\n\t\t\t\t@keyframes scaleIn {\n\t\t\t\t\tfrom { transform: scale(0.95); }\n\t\t\t\t\tto { transform: scale(1); }\n\t\t\t\t}\n\n\t\t\t\t.animate-fade-in {\n\t\t\t\t\tanimation: fadeIn 0.8s ease-out forwards;\n\t\t\t\t}\n\n\t\t\t\t.animate-scale-in {\n\t\t\t\t\tanimation: scaleIn 0.3s ease-out forwards;\n\t\t\t\t}\n\n\t\t\t\t.button {\n\t\t\t\t\ttransition: transform 0.2s ease, box-shadow 0.2s ease;\n\t\t\t\t}\n\n\t\t\t\t.button:hover {\n\t\t\t\t\ttransform: translateY(-2px);\n\t\t\t\t\tbox-shadow: 0 4px 8px rgba(0,0,0,0.1);\n\t\t\t\t}\n\n\t\t\t\t.table tbody tr {\n\t\t\t\t\ttransition: background-color 0.3s ease;\n\t\t\t\t}\n\n\t\t\t\t.table tbody tr:hover {\n\t\t\t\t\tbackground-color: #f5f5f5 !important;\n\t\t\t\t}\n\n\t\t\t\t.logo-animate {\n\t\t\t\t\ttransition: transform 0.3s ease;\n\t\t\t\t}\n\n\t\t\t\t.logo-animate:hover {\n\t\t\t\t\ttransform: scale(1.05);\n\t\t\t\t}\n\n\t\t\t\t/* Floating animations for music notes and code symbols */\n\t\t\t\t@keyframes floatAcross {\n\t\t\t\t\t0% {\n\t\t\t\t\t\ttransform: translateX(-100vw) translateY(0) rotate(0deg);\n\t\t\t\t\t\topacity: 0;\n\t\t\t\t\t}\n\t\t\t\t\t5% {\n\t\t\t\t\t\ttransform: translateX(-90vw) translateY(-2px) rotate(18deg);\n\t\t\t\t\t\topacity: 1;\n\t\t\t\t\t}\n\t\t\t\t\t90% {\n\t\t\t\t\t\topacity: 1;\n\t\t\t\t\t}\n\t\t\t\t\t100% {\n\t\t\t\t\t\ttransform: translateX(100vw) translateY(-20px) rotate(360deg);\n\t\t\t\t\t\topacity: 0;\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\t.floating-symbol {\n\t\t\t\t\tposition: fixed;\n\t\t\t\t\tbottom: 20px;\n\t\t\t\t\tfont-size: 24px;\n\t\t\t\t\tz-index: 1000;\n\t\t\t\t\tpointer-events: none;\n\t\t\t\t\tanimation: floatAcross 5s linear infinite;\n\t\t\t\t}\n\n\t\t\t\t.music-note {\n\t\t\t\t\tcolor: #000000;\n\t\t\t\t}\n\n\t\t\t\t.code-symbol {\n\t\t\t\t\tcolor: #000000;\n\t\t\t\t}\n\n\t\t\t\t/* Different animation delays for each symbol */\n\t\t\t\t.symbol-1 { animation-delay: 0s; }\n\t\t\t\t.symbol-2 { animation-delay: 1s; }\n\t\t\t\t.symbol-3 { animation-delay: 2s; }\n\t\t\t\t.symbol-4 { animation-delay: 3s; }\n\t\t\t\t.symbol-5 { animation-delay: 4s; }\n\n\t\t\t\t#head-image {\n\t\t\t\t\tposition: fixed;\n\t\t\t\t\tbottom: 0;\n\t\t\t\t\tleft: -40px;\n\t\t\t\t\tz-index: 2000;\n\t\t\t\t\twidth: 140px;\n\t\t\t\t\tmax-width: 30vw;\n\t\t\t\t\theight: auto;\n\t\t\t\t\tpointer-events: none;\n\t\t\t\t}\n\t\t\t</style></head><body data-theme=\"dark\"><img id=\"head-image\" src=\"/files/head.png\" alt=\"Head silhouette\"><!-- Floating symbols --><div class=\"floating-symbol symbol-1 music-note\">♪</div><div class=\"floating-symbol symbol-2 code-symbol\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs("{")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `home.templ`, Line: 114, Col: 57}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"floating-symbol symbol-3 music-note\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("</>")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `home.templ`, Line: 115, Col: 58}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"floating-symbol symbol-4 music-note\">♬</div><div class=\"floating-symbol symbol-5 code-symbol\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var4 string
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs("]")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `home.templ`, Line: 117, Col: 57}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><header><nav class=\"navbar is-flex is-justify-content-center is-align-items-center\"><img src=\"/files/drewillard-logo.png\" alt=\"Logo\" class=\"image is-4by1 px-4 logo-animate\"></nav></header><main class=\"\"><div class=\"section is-flex is-justify-content-center is-align-items-center pt-5 pb-3 animate-fade-in\"><p class=\"has-text-weight-semibold is-size-4\">Hello!</p></div><div class=\"section is-flex is-justify-content-center is-align-items-center py-0 animate-fade-in\" style=\"animation-delay: 0.2s;\"><p class=\"\">I wake up and do one of two things.</p></div><div class=\"section is-flex is-justify-content-center is-align-items-center pb-0 pt-3 is-flex-wrap-wrap animate-fade-in\" style=\"animation-delay: 0.4s;\"><img src=\"/files/coding-text.png\" alt=\"Text that says &#39;coding&#39;\" class=\"image is-4by1\" style=\"max-width: 300px; width: 100%;\"><p class=\"has-text-weight-medium is-size-2 px-5\">or</p><img src=\"/files/music-text.png\" alt=\"Text that says &#39;music&#39;\" class=\"image is-4by1\" style=\"max-width: 300px; width: 100%;\"></div><div class=\"section is-flex is-justify-content-center is-align-items-center p-5 animate-fade-in\" style=\"animation-delay: 0.6s;\"><p class=\"has-text-weight-semibold is-size-3\">Here's both:</p></div><div class=\"section is-flex is-justify-content-center is-align-items-center pt-0\" data-theme=\"light\"><table class=\"table is-striped is-hoverable\"><thead><tr><th>Format</th><th>Description</th><th>Link</th></tr></thead> <tbody><tr><td>Music</td><td>Soundcloud Profile: all of my music :)</td><td><a href=\"https://soundcloud.com/drewwillard\" class=\"button\">Hear Stuff</a></td></tr><tr><td>Code</td><td>Github Profile: all of my public code projects</td><td><a href=\"https://github.com/dwilla\" class=\"button\">See Stuff</a></td></tr><tr><td>Music</td><td>My last live show, 45min of original tunes/improvisation</td><td><a href=\"https://soundcloud.com/drewwillard/live-mix-from-torcava-9-23-2024?si=2e7fd8f75c5743699bf8ac0744fe760d&amp;utm_source=clipboard&amp;utm_medium=text&amp;utm_campaign=social_sharing\" class=\"button\">Experience This</a></td></tr><tr><td>Music</td><td>Jamnuary: a playlist of songs I wrote within ~90min each over 9 days straight, part of Seed To Stage community event</td><td><a href=\"https://soundcloud.com/drewwillard/sets/drewillard-2025-jamns?si=0584f7f043a149a786a920e5da759c4c&amp;utm_source=clipboard&amp;utm_medium=text&amp;utm_campaign=social_sharing\" class=\"button\">Feel the Rush</a></td></tr><tr><td>Code</td><td>Mycelium: a realtime chat app, slack but you can see what people are typing ;)</td><td><a href=\"https://mycelium.com\" class=\"button\">Play With It</a> <a href=\"https://github.com/dwilla/mycelium\" class=\"button\">See Code</a></td></tr><tr><td>Music</td><td>Live show, 60min of original music (all different from the other show hehe)</td><td><a href=\"https://soundcloud.com/drewwillard/live-mix-from-torcava-9-23-2024?si=2e7fd8f75c5743699bf8ac0744fe760d&amp;utm_source=clipboard&amp;utm_medium=text&amp;utm_campaign=social_sharing\" class=\"button\">Open Earholes</a></td></tr><tr><td>Code</td><td>TorSee: an interactive directory/event board for T or C, old version, being rebuilt currently</td><td><a href=\"https://t-or-see.fly.dev/\" class=\"button\">Beta</a> <a href=\"https://github.com/dwilla/t-or-see\" class=\"button\">See Code</a></td></tr></tbody></table></div></main><footer id=\"footer\"></footer></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

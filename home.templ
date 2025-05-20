@@ -1,22 +1,195 @@
 package main
 
 templ home() {
-    <!DOCTYPE html>
+	<!DOCTYPE html>
 	<html>
 		<head>
-			<title> DREW'S WEBSITE DOT COM</title>
+			<title>DREW'S WEBSITE</title>
 			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"/>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<style>
+				@keyframes fadeIn {
+					from { opacity: 0; transform: translateY(20px); }
+					to { opacity: 1; transform: translateY(0); }
+				}
+
+				@keyframes scaleIn {
+					from { transform: scale(0.95); }
+					to { transform: scale(1); }
+				}
+
+				.animate-fade-in {
+					animation: fadeIn 0.8s ease-out forwards;
+				}
+
+				.animate-scale-in {
+					animation: scaleIn 0.3s ease-out forwards;
+				}
+
+				.button {
+					transition: transform 0.2s ease, box-shadow 0.2s ease;
+				}
+
+				.button:hover {
+					transform: translateY(-2px);
+					box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+				}
+
+				.table tbody tr {
+					transition: background-color 0.3s ease;
+				}
+
+				.table tbody tr:hover {
+					background-color: #f5f5f5 !important;
+				}
+
+				.logo-animate {
+					transition: transform 0.3s ease;
+				}
+
+				.logo-animate:hover {
+					transform: scale(1.05);
+				}
+
+				/* Floating animations for music notes and code symbols */
+				@keyframes floatAcross {
+					0% {
+						transform: translateX(-100vw) translateY(0) rotate(0deg);
+						opacity: 0;
+					}
+					5% {
+						transform: translateX(-90vw) translateY(-2px) rotate(18deg);
+						opacity: 1;
+					}
+					90% {
+						opacity: 1;
+					}
+					100% {
+						transform: translateX(100vw) translateY(-20px) rotate(360deg);
+						opacity: 0;
+					}
+				}
+
+				.floating-symbol {
+					position: fixed;
+					bottom: 20px;
+					font-size: 24px;
+					z-index: 1000;
+					pointer-events: none;
+					animation: floatAcross 5s linear infinite;
+				}
+
+				.music-note {
+					color: #000000;
+				}
+
+				.code-symbol {
+					color: #000000;
+				}
+
+				/* Different animation delays for each symbol */
+				.symbol-1 { animation-delay: 0s; }
+				.symbol-2 { animation-delay: 1s; }
+				.symbol-3 { animation-delay: 2s; }
+				.symbol-4 { animation-delay: 3s; }
+				.symbol-5 { animation-delay: 4s; }
+
+				#head-image {
+					position: fixed;
+					bottom: 0;
+					left: -40px;
+					z-index: 2000;
+					width: 140px;
+					max-width: 30vw;
+					height: auto;
+					pointer-events: none;
+				}
+			</style>
 		</head>
 		<body data-theme="dark">
+			<img id="head-image" src="/files/head.png" alt="Head silhouette" />
+			<!-- Floating symbols -->
+			<div class="floating-symbol symbol-1 music-note">♪</div>
+			<div class="floating-symbol symbol-2 code-symbol">{"{"}</div>
+			<div class="floating-symbol symbol-3 music-note">{"</>"}</div>
+			<div class="floating-symbol symbol-4 music-note">♬</div>
+			<div class="floating-symbol symbol-5 code-symbol">{"]"}</div>
+
 			<header>
+				<nav class="navbar is-flex is-justify-content-center is-align-items-center">
+					<img src="/files/drewillard-logo.png" alt="Logo" class="image is-4by1 px-4 logo-animate"/>
+				</nav>
 			</header>
-			<main class="section">
-				<h1>Hey this is the templ template whats up dog</h1>
+			<main class="">
+				<div class="section is-flex is-justify-content-center is-align-items-center pt-5 pb-3 animate-fade-in">
+					<p class="has-text-weight-semibold is-size-4">Hello!</p>
+				</div>
+				<div class="section is-flex is-justify-content-center is-align-items-center py-0 animate-fade-in" style="animation-delay: 0.2s;">
+					<p class="">I wake up and do one of two things.</p>
+				</div>
+				<div class="section is-flex is-justify-content-center is-align-items-center pb-0 pt-3 is-flex-wrap-wrap animate-fade-in" style="animation-delay: 0.4s;">
+					<img src="/files/coding-text.png" alt="Text that says 'coding'" class="image is-4by1" style="max-width: 300px; width: 100%;"/>
+					<p class="has-text-weight-medium is-size-2 px-5">or</p>
+					<img src="/files/music-text.png" alt="Text that says 'music'" class="image is-4by1" style="max-width: 300px; width: 100%;"/>
+				</div>
+				<div class="section is-flex is-justify-content-center is-align-items-center p-5 animate-fade-in" style="animation-delay: 0.6s;">
+					<p class="has-text-weight-semibold is-size-3">Here's both:</p>
+				</div>
+
+				<div class="section is-flex is-justify-content-center is-align-items-center pt-0" data-theme="light">
+				<table class="table is-striped is-hoverable">
+					<thead>
+						<tr>
+							<th>Format</th>
+							<th>Description</th>
+							<th>Link</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Music</td>
+							<td>Soundcloud Profile: all of my music :)</td>
+							<td><a href="https://soundcloud.com/drewwillard" class="button">Hear Stuff</a></td>
+						</tr>
+						<tr>
+							<td>Code</td>
+							<td>Github Profile: all of my public code projects</td>
+							<td><a href="https://github.com/dwilla" class="button">See Stuff</a></td>
+						</tr>
+						<tr>
+							<td>Music</td>
+							<td>My last live show, 45min of original tunes/improvisation</td>
+							<td><a href="https://soundcloud.com/drewwillard/live-mix-from-torcava-9-23-2024?si=2e7fd8f75c5743699bf8ac0744fe760d&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing" class="button">
+							Experience This</a></td>
+						</tr>
+						<tr>
+							<td>Music</td>
+							<td>Jamnuary: a playlist of songs I wrote within ~90min each over 9 days straight, part of Seed To Stage community event</td>
+							<td><a href="https://soundcloud.com/drewwillard/sets/drewillard-2025-jamns?si=0584f7f043a149a786a920e5da759c4c&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing" class="button">
+							Feel the Rush</a></td>
+						</tr>
+						<tr>
+							<td>Code</td>
+							<td>Mycelium: a realtime chat app, slack but you can see what people are typing ;)</td>
+							<td><a href="https://mycelium.com" class="button">Play With It</a> <a href="https://github.com/dwilla/mycelium" class="button">See Code</a></td>
+						</tr>
+						<tr>
+							<td>Music</td>
+							<td>Live show, 60min of original music (all different from the other show hehe)</td>
+							<td><a href="https://soundcloud.com/drewwillard/live-mix-from-torcava-9-23-2024?si=2e7fd8f75c5743699bf8ac0744fe760d&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing" class="button">
+							Open Earholes</a></td>
+						</tr>
+						<tr>
+							<td>Code</td>
+							<td>TorSee: an interactive directory/event board for T or C, old version, being rebuilt currently</td>
+							<td><a href="https://t-or-see.fly.dev/" class="button">Beta</a> <a href="https://github.com/dwilla/t-or-see" class="button">See Code</a></td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
 			</main>
-			<footer id="footer">
-			</footer>
+			<footer id="footer"></footer>
 		</body>
 	</html>
 }
