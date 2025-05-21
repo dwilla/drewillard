@@ -49,7 +49,6 @@
 					transform: scale(1.05);
 				}
 
-				/* Floating animations for music notes and code symbols */
 				@keyframes floatAcross {
 					0% {
 						transform: translateX(-100vw) translateY(0) rotate(0deg);
@@ -85,7 +84,6 @@
 					color: #000000;
 				}
 
-				/* Different animation delays for each symbol */
 				.symbol-1 { animation-delay: 0s; }
 				.symbol-2 { animation-delay: 1s; }
 				.symbol-3 { animation-delay: 2s; }
@@ -102,11 +100,14 @@
 					height: auto;
 					pointer-events: none;
 				}
+
+				body {
+					background-color: rgb(255, 255, 255);
+				}
 			</style>
 		</head>
-		<body data-theme="dark">
+		<body data-theme="dark" class="has-text-black">
 			<img id="head-image" src="/files/head.png" alt="Head silhouette" />
-			<!-- Floating symbols -->
 			<div class="floating-symbol symbol-1 music-note">♪</div>
 			<div class="floating-symbol symbol-2 code-symbol">{</div>
 			<div class="floating-symbol symbol-3 music-note"></></div>
@@ -118,12 +119,12 @@
 					<img src="/files/drewillard-logo.png" alt="Logo" class="image is-4by1 px-4 logo-animate"/>
 				</nav>
 			</header>
-			<main class="">
+			<main>
 				<div class="section is-flex is-justify-content-center is-align-items-center pt-5 pb-3 animate-fade-in">
 					<p class="has-text-weight-semibold is-size-4">Hello!</p>
 				</div>
 				<div class="section is-flex is-justify-content-center is-align-items-center py-0 animate-fade-in" style="animation-delay: 0.2s;">
-					<p class="">I wake up and do one of two things.</p>
+					<p>I wake up and do one of two things.</p>
 				</div>
 				<div class="section is-flex is-justify-content-center is-align-items-center pb-0 pt-3 is-flex-wrap-wrap animate-fade-in" style="animation-delay: 0.4s;">
 					<img src="/files/coding-text.png" alt="Text that says 'coding'" class="image is-4by1" style="max-width: 300px; width: 100%;"/>
@@ -135,7 +136,7 @@
 				</div>
 
 				<div class="section is-flex is-justify-content-center is-align-items-center pt-0" data-theme="light">
-				<table class="table is-striped is-hoverable mx-1">
+				<table class="table is-striped is-hoverable mx-1 mb-6" style="max-width: 900px;">
 					<thead>
 						<tr>
 							<th>Format</th>
@@ -169,7 +170,7 @@
 						<tr>
 							<td>Code</td>
 							<td>Mycelium: a realtime chat app, slack but you can see what people are typing ;)</td>
-							<td><a href="https://mycelium.com" class="button is-small">Play With It</a> <a href="https://github.com/dwilla/mycelium" class="button is-small">See Code</a></td>
+							<td><a href="https://mycelium.com" class="button is-small mb-1">Play With It</a> <a href="https://github.com/dwilla/mycelium" class="button is-small">See Code</a></td>
 						</tr>
 						<tr>
 							<td>Music</td>
@@ -180,7 +181,7 @@
 						<tr>
 							<td>Code</td>
 							<td>TorSee: an interactive directory/event board for T or C, old version, being rebuilt currently</td>
-							<td><a href="https://t-or-see.fly.dev/" class="button is-small">Beta</a> <a href="https://github.com/dwilla/t-or-see" class="button is-small">See Code</a></td>
+							<td><a href="https://t-or-see.fly.dev/" class="button is-small mb-1">Beta Site</a> <a href="https://github.com/dwilla/t-or-see" class="button is-small">See Code</a></td>
 						</tr>
 					</tbody>
 				</table>
